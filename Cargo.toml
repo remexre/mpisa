@@ -1,0 +1,14 @@
+[package]
+authors = ["Nathan Ringo <remexre@gmail.com>"]
+description = "An experimental ISA simulator for a message-passing ISA."
+documentation = "https://remexre.xyz/mpisa"
+edition = "2018"
+homepage = "https://remexre.xyz/mpisa"
+license = "Apache-2.0/MIT"
+name = "mpisa"
+repository = "https://github.com/remexre/mpisa"
+version = "0.1.0"
+
+[dependencies]
+derive_more = "0.14.0"
+rayon = "1.0.3"

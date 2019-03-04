@@ -17,6 +17,8 @@ doc:
 	cargo doc --all
 test:
 	RUST_BACKTRACE=full cargo test --all -- --nocapture
+	RUST_BACKTRACE=full cargo test --all --release -- --nocapture
+	mdbook test docs
 
 outdated-deps:
 	cargo outdated -R

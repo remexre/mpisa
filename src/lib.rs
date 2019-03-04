@@ -32,6 +32,8 @@
 )]
 
 #[macro_use]
+extern crate derivative;
+#[macro_use]
 extern crate derive_more;
 
 pub mod devices;
@@ -42,3 +44,43 @@ pub use crate::{
     sim::State,
     types::{Addr, DevID, Message, MessageType},
 };
+use serde_derive::Deserialize;
+use serde_json::Value;
+
+/// The configuration for the simulation.
+#[derive(Debug, Deserialize)]
+pub struct Config {
+    /// The devices present.
+    pub devices: Vec<ConfigDevice>,
+}
+
+/// The entry for a device in the configuration.
+#[derive(Debug, Deserialize)]
+pub struct ConfigDevice {
+    /// The type of device.
+    #[serde(rename = "type")]
+    pub type_: String,
+
+    /// The remaining fields.
+    #[serde(flatten)]
+    pub rest: Value,
+}
+
+/// An error.
+pub type Error = libremexre::errors::GenericError<ErrorKind>;
+
+/// The kind of an error that occurred.
+#[derive(Debug, Display)]
+pub enum ErrorKind {
+    /// Failed to parse a device.
+    #[display(fmt = "Failed to parse a device")]
+    FailedToParseDevice,
+
+    /// Failed to read the config file.
+    #[display(fmt = "Failed to read the config file.")]
+    FailedToReadConfig,
+
+    /// Cannot create device a with an unknown name.
+    #[display(fmt = "Cannot create device with unknown name: {:?}", _0)]
+    UnknownDeviceName(String),
+}

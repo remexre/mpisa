@@ -1,18 +1,18 @@
 use libremexre::errors::log_err;
-use mpisa::State;
-use std::{error::Error, path::PathBuf, process::exit};
+use mpisa::{Error, State};
+use std::{path::PathBuf, process::exit};
 use structopt::StructOpt;
 
 fn main() {
     let options = Options::from_args();
     options.start_logger();
     if let Err(err) = run(options) {
-        log_err(&*err);
+        log_err(&err);
         exit(1);
     }
 }
 
-fn run(options: Options) -> Result<(), Box<dyn Error>> {
+fn run(options: Options) -> Result<(), Error> {
     let mut state = State::from_config_file(&options.input_file)?;
     loop {
         state.step();

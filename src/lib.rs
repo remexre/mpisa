@@ -38,12 +38,9 @@ extern crate derive_more;
 
 pub mod devices;
 mod sim;
-mod types;
+pub mod types;
 
-pub use crate::{
-    sim::State,
-    types::{Addr, DevID, Message, MessageType},
-};
+pub use crate::sim::State;
 use serde_derive::Deserialize;
 use serde_json::Value;
 
@@ -80,7 +77,17 @@ pub enum ErrorKind {
     #[display(fmt = "Failed to read the config file.")]
     FailedToReadConfig,
 
+    /// Too many devices were attempted to be attached to a `State`.
+    #[display(fmt = "Too many devices were attempted to be attached")]
+    TooManyDevices(usize),
+
     /// Cannot create device a with an unknown name.
     #[display(fmt = "Cannot create device with unknown name: {:?}", _0)]
     UnknownDeviceName(String),
+
+    /// A custom error.
+    Custom(String),
 }
+
+/// A convenient Result alias.
+pub type Result<T> = std::result::Result<T, Error>;

@@ -1,7 +1,7 @@
 use crate::{
     devices::{DeserializeDevice, Device},
     types::Message,
-    Config, ConfigDevice, Error, ErrorKind,
+    Config, ConfigDevice, Error, ErrorKind, Result,
 };
 use rayon::prelude::*;
 use serde_json::from_reader;
@@ -16,32 +16,35 @@ pub struct State {
 
 impl State {
     /// Creates a `State`.
-    pub fn new(devices: Vec<Box<dyn Device>>) -> State {
+    pub fn new(devices: Vec<Box<dyn Device>>) -> Result<State> {
+        if devices.len() >= 0x10000 {
+            return Err(Error::from(ErrorKind::TooManyDevices(devices.len())));
+        }
         let devices = devices
             .into_iter()
             .map(|dev| (dev, VecDeque::new()))
             .collect();
-        State { devices }
+        Ok(State { devices })
     }
 
     /// Creates a `State` from a `Config`.
-    pub fn from_config(config: Config) -> Result<State, Error> {
+    pub fn from_config(config: Config) -> Result<State> {
         config
             .devices
             .into_iter()
             .map(|ConfigDevice { type_, rest }| {
-                (inventory::iter::<DeserializeDevice>
+                inventory::iter::<DeserializeDevice>
                     .into_iter()
                     .find(|dev| dev.name == type_)
-                    .ok_or_else(|| ErrorKind::UnknownDeviceName(type_))?
-                    .from_value)(rest)
+                    .ok_or_else(|| Error::from(ErrorKind::UnknownDeviceName(type_)))
+                    .and_then(|dev| (dev.from_value)(rest))
             })
-            .collect::<Result<Vec<_>, _>>()
-            .map(State::new)
+            .collect::<Result<Vec<_>>>()
+            .and_then(State::new)
     }
 
     /// Creates a `State` from a config file.
-    pub fn from_config_file(path: &Path) -> Result<State, Error> {
+    pub fn from_config_file(path: &Path) -> Result<State> {
         File::open(path)
             .map_err(|err| Error::with_cause(ErrorKind::FailedToReadConfig, err))
             .map(BufReader::new)

@@ -1,0 +1,7 @@
+{
+  "devices": [
+    { "type": "rom", "file": "boot.bin" },
+    { "type": "tiny-risc" },
+    { "type": "dram", "size": 67108864 }
+  ]
+}

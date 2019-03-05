@@ -41,7 +41,7 @@ impl State {
     }
 
     /// Creates a `State` from a config file.
-    pub fn from_config_file(path: impl AsRef<Path>) -> Result<State, Error> {
+    pub fn from_config_file(path: &Path) -> Result<State, Error> {
         File::open(path)
             .map_err(|err| Error::with_cause(ErrorKind::FailedToReadConfig, err))
             .map(BufReader::new)

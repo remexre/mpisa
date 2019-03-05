@@ -14,6 +14,14 @@ use std::fmt::Debug;
 
 /// A single device.
 pub trait Device: 'static + Debug + Send + Sync {
+    /// Returns whether the device is "CPU-like." This is mainly used in boot; see
+    /// [here](https://remexre.xyz/mpisa/booting.html) for details.
+    ///
+    /// The default implementation returns `false`.
+    fn is_cpu(&self) -> bool {
+        false
+    }
+
     /// Resets the device, informing it that it has the given ID.
     ///
     /// This method is guaranteed to be called before `step` is.
@@ -34,6 +42,7 @@ pub trait Device: 'static + Debug + Send + Sync {
 /// ```
 #[derive(Derivative)]
 #[derivative(Debug)]
+#[doc(hidden)]
 pub struct DeserializeDevice {
     /// Loads the device from a JSON value.
     #[derivative(Debug = "ignore")]

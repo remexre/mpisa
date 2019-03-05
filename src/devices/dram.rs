@@ -1,5 +1,5 @@
 use crate::{
-    devices::Device,
+    devices::{util::LinearMemory, Device},
     types::{DevID, Message, MessageKind},
     Error, ErrorKind, Result,
 };
@@ -8,8 +8,8 @@ use serde_derive::Deserialize;
 /// A block of readable and writable memory.
 #[derive(Debug)]
 struct Dram {
-    contents: Vec<u8>,
     id: DevID,
+    mem: LinearMemory,
 }
 
 impl Dram {
@@ -22,8 +22,8 @@ impl Dram {
             ))))
         } else {
             Ok(Dram {
-                contents: vec![0; size as usize],
                 id: DevID(0),
+                mem: LinearMemory::with_size(size as usize),
             })
         }
     }
@@ -36,20 +36,16 @@ impl Device for Dram {
 
     fn step(&mut self, bus_state: Option<Message>) -> Option<Message> {
         let msg = bus_state?;
-        let i = msg.addr.base();
-        let ok = i < (self.contents.len() as u64);
         match msg.kind {
             MessageKind::Read => Some(Message {
                 kind: MessageKind::ReadResp,
                 sender: self.id,
                 addr: msg.addr.with_dev_id(msg.sender),
-                data: if ok { self.contents[i as usize] } else { 0 },
+                data: self.mem.read(msg.addr, msg.size),
+                size: msg.size,
             }),
             MessageKind::Write => {
-                if ok {
-                    self.contents[i as usize] = msg.data;
-                }
-
+                self.mem.write(msg.addr, msg.size, msg.data);
                 None
             }
             MessageKind::ReadResp | MessageKind::Interrupt => None,

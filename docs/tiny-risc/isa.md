@@ -25,7 +25,7 @@ Opcodes are as follows:
 | `0x7`  |   AND    |  3   | Stores the result of bitwise ANDing A and B in C.                             |
 | `0x8`  |    OR    |  3   | Stores the result of bitwise ORing A and B in C.                              |
 | `0x9`  |   XOR    |  3   | Stores the result of bitwise XORing A and B in C.                             |
-| `0xa`  |   ROT    |  2   | Rotates A by B bits.                                                          |
+| `0xa`  |   ROT    |  3   | Stores the result of rotating A right by B bits in C.                         |
 | `0xb`  |   JMP    |  1   | Sets the instruction pointer to the value in A.                               |
 | `0xc`  |   JMP+   | 0+i  | Adds the immediate to the instruction pointer.                                |
 | `0xd`  |   JMP-   | 0+i  | Subtracts the immediate from the instruction pointer.                         |

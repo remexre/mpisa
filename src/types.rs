@@ -1,5 +1,7 @@
 //! Basic types used throughout.
 
+use std::ops::Add;
+
 /// An address.
 #[derive(Clone, Copy, Debug, Display, Eq, From, Into, Ord, PartialEq, PartialOrd)]
 #[display(fmt = "{:p}", _0)]
@@ -23,6 +25,14 @@ impl Addr {
     }
 }
 
+impl Add<u64> for Addr {
+    type Output = Addr;
+
+    fn add(self, other: u64) -> Addr {
+        Addr(self.0 + other)
+    }
+}
+
 /// The identifier for an address on the message bus.
 #[derive(Clone, Copy, Debug, Display, Eq, From, Into, Ord, PartialEq, PartialOrd)]
 #[display(fmt = "0x{:02x}", _0)]
@@ -36,14 +46,17 @@ pub struct Message {
     /// The address being read from or written to, or the interrupt ID.
     pub addr: Addr,
 
+    /// The data associated with a read response, write, or interrupt.
+    pub data: u64,
+
     /// The ID of the device sending the message.
     pub sender: DevID,
 
-    /// The data associated with a read response, write, or interrupt.
-    pub data: u8,
-
     /// The kind of message being sent.
     pub kind: MessageKind,
+
+    /// The size of the data.
+    pub size: MessageSize,
 }
 
 /// The kind of a message on the bus.
@@ -60,4 +73,14 @@ pub enum MessageKind {
 
     /// An interrupt.
     Interrupt,
+}
+
+/// The size of a message's data.
+#[allow(missing_docs)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum MessageSize {
+    U8,
+    U16,
+    U32,
+    U64,
 }

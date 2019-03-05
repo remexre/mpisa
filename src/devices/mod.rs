@@ -4,6 +4,7 @@
 mod macros;
 mod dram;
 mod rom;
+pub mod util;
 
 use crate::{
     types::{DevID, Message},

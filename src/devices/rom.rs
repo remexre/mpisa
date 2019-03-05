@@ -1,5 +1,5 @@
 use crate::{
-    devices::Device,
+    devices::{util::LinearMemory, Device},
     types::{DevID, Message, MessageKind},
     Error, ErrorKind, Result,
 };
@@ -10,7 +10,7 @@ use std::{fs::read, path::PathBuf};
 /// be device 0.
 #[derive(Debug)]
 struct Rom {
-    contents: Vec<u8>,
+    contents: LinearMemory,
     id: DevID,
 }
 
@@ -18,7 +18,7 @@ impl Rom {
     pub fn new(config: RomConfig) -> Result<Rom> {
         match read(&config.file) {
             Ok(contents) => Ok(Rom {
-                contents,
+                contents: LinearMemory::new(contents),
                 id: DevID(0),
             }),
             Err(err) => Err(Error::with_cause(
@@ -40,18 +40,12 @@ impl Device for Rom {
             return None;
         }
 
-        let i = msg.addr.base();
-        let data = if i >= (self.contents.len() as u64) {
-            0
-        } else {
-            self.contents[i as usize]
-        };
-
         Some(Message {
             kind: MessageKind::ReadResp,
             sender: self.id,
             addr: msg.addr.with_dev_id(msg.sender),
-            data,
+            data: self.contents.read(msg.addr, msg.size),
+            size: msg.size,
         })
     }
 }

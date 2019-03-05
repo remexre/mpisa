@@ -60,7 +60,12 @@ impl State {
         let devices = &mut self.devices;
         let new_msgs = devices
             .into_par_iter()
-            .flat_map(|(dev, msgs)| dev.step(msgs.pop_front()))
+            .enumerate()
+            .flat_map(|(i, (dev, msgs))| {
+                let msg = dev.step(msgs.pop_front())?;
+                debug_assert_eq!(msg.sender.0, i as u16);
+                Some(msg)
+            })
             .collect::<Vec<_>>();
         for msg in new_msgs {
             let dev_id: u16 = msg.addr.dev_id().into();

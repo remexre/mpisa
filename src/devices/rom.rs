@@ -30,7 +30,9 @@ impl Rom {
 }
 
 impl Device for Rom {
-    fn reset(&mut self, _: DevID) {}
+    fn reset(&mut self, id: DevID) {
+        self.id = id;
+    }
 
     fn step(&mut self, bus_state: Option<Message>) -> Option<Message> {
         let msg = bus_state?;

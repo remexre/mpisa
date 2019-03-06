@@ -1,7 +1,13 @@
 {
+  "busses": [
+    [ 0, 1, 2, 3 ],
+    [ 3, 4 ],
+  ],
   "devices": [
     { "type": "rom", "file": "boot.bin" },
-    { "type": "tiny-risc" },
-    { "type": "dram", "size": 67108864 }
+    { "type": "tiny-risc", "speed": 8 },
+    { "type": "lru-cache", "size": 8388608 },
+    { "type": "tiny-risc", "speed": 1 },
+    { "type": "dram", "size": 67108864, "read-time": 4, "write-time": 8 }
   ]
 }

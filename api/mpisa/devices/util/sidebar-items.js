@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["LinearMemory","A wrapper around a `Vec<u8>` to make reads and writes easier to implement."]]});

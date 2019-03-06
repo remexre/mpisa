@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["MessageKind","The kind of a message on the bus."],["MessageSize","The size of a message's data."]],"struct":[["Addr","An address."],["DevID","The identifier for an address on the message bus."],["Message","A value going on the message bus."]]});
